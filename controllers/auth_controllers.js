@@ -87,14 +87,24 @@ exports.GetCurrentUser = async (req, res) => {
   }
 };
 
+
 exports.DeleteUser = async (req, res) => {
   try {
-    const user = await User.findOneAndDelete({ _id: req.body._id });
-    return res.status(200).json({msg: "User successfully deleted"});
+    console.log(req.body)
+    const userId = req.body.userid;
+    const user = await User.findOneAndDelete({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    return res.status(200).json({ msg: "User successfully deleted" });
   } catch (error) {
-    return res.status(500).json({ error });
+    console.error(error);
+    return res.status(500).json({ msg: "Failed to delete user" });
   }
 };
+
 
 exports.GetAllUsers = async (req, res) => {
   try {
@@ -155,7 +165,6 @@ exports.UpdateUser = async (req, res) => {
     res.status(500).json({ error: "Error updating user" });
   }
 };
-
 
 exports.AddUser = async (req, res, next) => {
   const { userName, userEmail, password } = req.body;
